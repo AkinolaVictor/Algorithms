@@ -1,10 +1,14 @@
-/** 
- * @param {number[]} A
- * @param {number[]} B
- * @return {number}
- * * Time: O(N + M)
- * * Space: O(N + M)
- */
+
+
+ var findMedianSortedArrays = function(nums1, nums2) {
+  const union = [];
+  union.push(...nums1, ...nums2);
+  const sortedUnion = union.sort((a,b) => a - b);
+  const midcount = sortedUnion.length/2;
+  return sortedUnion.length % 2 === 0 ? (sortedUnion[midcount-1] + sortedUnion[midcount])/2 : sortedUnion[Math.ceil(midcount)-1];
+};
+
+
 // Runtime: 132 ms, faster than 79.59% of JavaScript online submissions for Median of Two Sorted Arrays.
 // Memory Usage: 44.9 MB, less than 67.13% of JavaScript online submissions for Median of Two Sorted Arrays.
 const findMedianSortedArrays2 = (A, B) => {
@@ -28,13 +32,6 @@ const findMedianSortedArrays2 = (A, B) => {
 	else return (nums[length / 2 - 1] + nums[length / 2]) / 2;
 };
 
-/**
- * @param {number[]} A
- * @param {number[]} B
- * @return {number}
- * * Time: O((N + M) / 2) => O(N + M)
- * * Space: O(1)
- */
 // Runtime: 132 ms, faster than 79.75 % of JavaScript online submissions for Median of Two Sorted Arrays.
 // Memory Usage: 43.5 MB, less than 89.40 % of JavaScript online submissions for Median of Two Sorted Arrays.
 const findMedianSortedArrays = (A, B) => {
@@ -81,33 +78,9 @@ const findMedianSortedArrays = (A, B) => {
 };
 
 
-/**
- * @param {number[]} nums1
- * @param {number[]} nums2
- * @return {number}
- */
- var findMedianSortedArrays = function(nums1, nums2) {
-    const union = [];
-    union.push(...nums1, ...nums2);
-    const sortedUnion = union.sort((a,b) => a - b);
-    const midcount = sortedUnion.length/2;
-    return sortedUnion.length % 2 === 0 ? (sortedUnion[midcount-1] + sortedUnion[midcount])/2 : sortedUnion[Math.ceil(midcount)-1];
-};
-
 
 
 var findMedianSortedArrays = function(nums1, nums2) {
-    /* Regular method
-        var compare = (i,j) => {
-            return i-j;
-        }
-        var arr = nums1.concat(nums2).sort(compare);
-        if(arr.length % 2 == 0) {
-            return (arr[arr.length/2 - 1]+ arr[arr.length/2])/2;
-        }
-        return arr[Math.floor(arr.length/2)];
-    */ 
-	
     var arr = [],
 		len = nums1.length + nums2.length;
     if(len == 1) {
@@ -139,3 +112,35 @@ var findMedianSortedArrays = function(nums1, nums2) {
 
     return len % 2 == 0 ? (arr[arr.length-1] + arr[arr.length-2])/2 : arr[arr.length-1];
 };
+
+// other samples
+var findMedianSortedArrays = function (nums1, nums2) {
+    if (nums1.length > nums2.length) {
+      [nums1, nums2] = [nums2, nums1];
+    }
+    const [m, n] = [nums1.length, nums2.length];
+    const total = Math.floor((m + n + 1) / 2);
+    let start = 0;
+    let end = m;
+    while (start <= end) {
+      const part1 = Math.floor((start + end) / 2);
+      const part2 = total - part1;
+      const maxLeft1 = part1 === 0 ? -Infinity : nums1[part1 - 1];
+      const minRight1 = part1 === m ? Infinity : nums1[part1];
+      const maxLeft2 = part2 === 0 ? -Infinity : nums2[part2 - 1];
+      const minRight2 = part2 === n ? Infinity : nums2[part2];
+      if (maxLeft1 <= minRight2 && maxLeft2 <= minRight1) {
+        if ((m + n) % 2 === 0) {
+          return (
+            (Math.max(maxLeft1, maxLeft2) + Math.min(minRight1, minRight2)) / 2
+          );
+        }
+        return Math.max(maxLeft1, maxLeft2);
+      }
+      if (maxLeft1 > minRight2) {
+        end = part1 - 1;
+      } else {
+        start = part1 + 1;
+      }
+    }
+  };
